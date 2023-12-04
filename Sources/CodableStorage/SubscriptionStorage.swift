@@ -21,7 +21,7 @@ internal final class SubscriptionStorage<T>: ObservableObject where T: Codable, 
         self.defaultValue = defaultValue
 
         if let data = userDefaults.data(forKey: valueKey.rawValue),
-           let decodedValue = try? decoder.decode(T.self, from: data)
+           let decodedValue = decoder._decode(T.self, from: data)
         {
             self.currentValue = decodedValue
         } else {
@@ -32,7 +32,7 @@ internal final class SubscriptionStorage<T>: ObservableObject where T: Codable, 
         self.decoder = decoder
 
         subscribe(UserDefaultsPublisher(
-            initialValue: try? encoder.encode(defaultValue),
+            initialValue: encoder._encode(defaultValue),
             userDefaults: userDefaults,
             valueKey: valueKey.rawValue
         ).eraseToAnyPublisher())
@@ -54,7 +54,7 @@ internal final class SubscriptionStorage<T>: ObservableObject where T: Codable, 
             return
         }
 
-        guard let encodedValue = try? encoder.encode(currentValue)
+        guard let encodedValue = encoder._encode(currentValue)
         else {
             return
         }
@@ -65,18 +65,13 @@ internal final class SubscriptionStorage<T>: ObservableObject where T: Codable, 
     internal func eraseToAnyPublisher() -> AnyPublisher<T, Never> {
         let decoder = decoder
         let publisher = UserDefaultsPublisher(
-            initialValue: try? encoder.encode(defaultValue),
+            initialValue: encoder._encode(defaultValue),
             userDefaults: userDefaults,
             valueKey: valueKey.rawValue
         )
 
         return publisher.compactMap({ data in
-            guard let value = try? decoder.decode(T.self, from: data)
-            else {
-                return nil
-            }
-
-            return value
+            decoder._decode(T.self, from: data)
         }).eraseToAnyPublisher()
     }
 
@@ -99,7 +94,7 @@ internal final class SubscriptionStorage<T>: ObservableObject where T: Codable, 
     }
 
     private func receive(_ data: Data) {
-        guard let decodedValue = try? decoder.decode(T.self, from: data)
+        guard let decodedValue = decoder._decode(T.self, from: data)
         else {
             return
         }
