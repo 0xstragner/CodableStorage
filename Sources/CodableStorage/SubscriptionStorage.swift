@@ -47,12 +47,19 @@ internal final class SubscriptionStorage<T>: ObservableObject where T: Codable, 
     internal var value: T { currentValue ?? defaultValue }
 
     internal func update(_ currentValue: T) {
+        let key = valueKey.rawValue
+        guard !isnil(currentValue)
+        else {
+            userDefaults.removeObject(forKey: key)
+            return
+        }
+
         guard let encodedValue = try? encoder.encode(currentValue)
         else {
             return
         }
 
-        userDefaults.setValue(encodedValue, forKey: valueKey.rawValue)
+        userDefaults.setValue(encodedValue, forKey: key)
     }
 
     internal func eraseToAnyPublisher() -> AnyPublisher<T, Never> {
@@ -104,3 +111,5 @@ internal final class SubscriptionStorage<T>: ObservableObject where T: Codable, 
         currentValue = decodedValue
     }
 }
+
+
