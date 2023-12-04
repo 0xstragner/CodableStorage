@@ -1,6 +1,6 @@
 # CodableStorage
 
-Lightwigh implementation of Apple's [@AppStorage](https://developer.apple.com/documentation/swiftui/appstorage) with a little benefits.
+Lightweight implementation of Apple's [@AppStorage](https://developer.apple.com/documentation/swiftui/appstorage) with a little benefits.
 
 ## Features
 
